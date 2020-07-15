@@ -5,7 +5,7 @@ const configLocal = {
 };
 
 const configProd = {
-    apiUrl: "https://bolt-room-chat-app.herokuapp.com"
+    apiUrl: "https://room-chattingapp.herokuapp.com/"
 };
 
 let selectedConfig: Config | null = null;
