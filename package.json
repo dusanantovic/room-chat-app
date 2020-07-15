@@ -1,0 +1,53 @@
+{
+  "name": "funny-chat-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently 'npm run react-build' 'npm run react-start' 'npm run server'",
+    "server": "node api/index.js",
+    "dev": "concurrently 'npm run react-start' 'npm run dev-server'",
+    "dev-server": "nodemon api/index.js",
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts start"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "bad-words": "^3.0.3",
+    "express": "^4.17.1",
+    "is-url": "^1.2.4",
+    "moment": "^2.27.0",
+    "qs": "^6.9.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.1",
+    "socket.io": "^2.3.0",
+    "typescript": "~3.7.2"
+  },
+  "devDependencies": {
+    "@types/is-url": "^1.2.28",
+    "@types/qs": "^6.9.3",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/socket.io-client": "^1.4.33",
+    "concurrently": "^5.2.0",
+    "nodemon": "^2.0.4"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
