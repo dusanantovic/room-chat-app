@@ -56,8 +56,6 @@ interface ComponentProps {
 }
 
 interface ComponentState {
-    storageUsername: string;
-    storageRoom: string;
     username: string;
     room: string;
 }
@@ -66,27 +64,20 @@ class Component extends React.Component<ComponentProps, ComponentState> {
 
     constructor(props: ComponentProps) {
         super(props);
-        const storageUsername = localStorage.getItem("username") || "";
-        const storageRoom = localStorage.getItem("room") || "";
         this.state = {
-            storageUsername,
-            storageRoom,
-            username: storageUsername,
-            room: storageRoom
+            username: localStorage.getItem("username") || "",
+            room: localStorage.getItem("room") || ""
         };
     }
 
     join() {
         const { socket } = this.props;
-        const { username, room, storageUsername, storageRoom } = this.state;
+        const { username, room } = this.state;
         if (!username) {
             return alert("Username is required");
         }
         if (!room) {
             return alert("Room is required");
-        }
-        if(storageUsername === username && storageRoom === room) {
-            return history.push("/chat_room");
         }
         socket.emit("join", { username, room }, (error: string) => {
             if (error) {

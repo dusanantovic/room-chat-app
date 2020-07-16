@@ -20,6 +20,7 @@ const Component = () => (
                     <ChatRoom
                         socket={state.socket!}
                         messageData={state.messageData}
+                        cleraMessageData={state.cleraMessageData}
                     />
                 )}
             </ChatManager.ChatStateContext.Consumer>

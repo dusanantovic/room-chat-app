@@ -7,6 +7,7 @@ import { history } from "../app";
 interface ComponentProps {
     socket: SocketIOClient.Socket;
     messageData: MessageData[];
+    cleraMessageData: () => void;
 }
 
 interface ComponentState {
@@ -25,8 +26,9 @@ class Component extends React.Component<ComponentProps, ComponentState> {
     }
 
     componentWillUnmount() {
-        const { socket } = this.props;
+        const { socket, cleraMessageData } = this.props;
         socket.emit("logout", () => {
+            cleraMessageData();
             console.log("Logout!");
             history.push("/");
         });

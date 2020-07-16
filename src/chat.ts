@@ -11,7 +11,8 @@ const ChatStateContext = React.createContext({
    setLoginData: (e: any) => {},
    setRoomData: (room: string, users: User[]) => {},
    setMessageData: (data: MessageData) => {},
-   setLocationData: (data: MessageDataLocation) => {}
+   setLocationData: (data: MessageDataLocation) => {},
+   cleraMessageData: () => {}
 });
 
 const getFormatedTime = (createdAt: number) => moment(createdAt).format("h:mm A");
@@ -21,23 +22,25 @@ const autoScroll = () => {
    if(messagesContainer) {
       const newMessage = messagesContainer.lastElementChild as any;
       // Heihgt of the new message
-      const newMessageStyles = getComputedStyle(newMessage!);
-      const newMessageMargin = (
-         parseInt(newMessageStyles.marginTop) +
-         parseInt(newMessageStyles.marginBottom) +
-         parseInt(newMessageStyles.paddingTop) +
-         parseInt(newMessageStyles.paddingBottom) +
-         parseInt(newMessageStyles.lineHeight)
-      );
-      const newMessageHeight = newMessage.offsetHeight + newMessageMargin;
-      // Visible screen
-      const visibleHeight = messagesContainer.offsetHeight;
-      // Height of messages container
-      const containerHeight = messagesContainer.scrollHeight;
-      // How far have I scrolled?
-      const scrollOffSet = messagesContainer.scrollTop + visibleHeight;
-      if ((containerHeight - newMessageHeight) <= scrollOffSet) {
-         messagesContainer.scrollTop = containerHeight;
+      if(newMessage) {
+         const newMessageStyles = getComputedStyle(newMessage);
+         const newMessageMargin = (
+            parseInt(newMessageStyles.marginTop) +
+            parseInt(newMessageStyles.marginBottom) +
+            parseInt(newMessageStyles.paddingTop) +
+            parseInt(newMessageStyles.paddingBottom) +
+            parseInt(newMessageStyles.lineHeight)
+         );
+         const newMessageHeight = newMessage.offsetHeight + newMessageMargin;
+         // Visible screen
+         const visibleHeight = messagesContainer.offsetHeight;
+         // Height of messages container
+         const containerHeight = messagesContainer.scrollHeight;
+         // How far have I scrolled?
+         const scrollOffSet = messagesContainer.scrollTop + visibleHeight;
+         if ((containerHeight - newMessageHeight) <= scrollOffSet) {
+            messagesContainer.scrollTop = containerHeight;
+         }
       }
    }
 }

@@ -37,6 +37,7 @@ class Component extends React.Component<{}, ComponentState> {
       const { room, username } = this.state;
       if(config) {
          const socket = io(config.apiUrl);
+         console.log(config.apiUrl);
          socket.on("connect", () => {
             console.log("Connected!");
             this.setState({ socket }, () => {
@@ -52,9 +53,8 @@ class Component extends React.Component<{}, ComponentState> {
                }
             });
          });
-         socket.on("welcomeMessage", (data: MessageData) => {
+         socket.on("logout", () => {
             this.setState({ messageData: [] });
-            this.setMessageData(data);
          });
          socket.on("message", (data: MessageData) => {
             this.setMessageData(data);
@@ -97,6 +97,10 @@ class Component extends React.Component<{}, ComponentState> {
       ChatManager.autoScroll();
    }
 
+   cleraMessageData() {
+      this.setState({ messageData: [] });
+   }
+
    render() {
       const { socket } = this.state;
       if(!socket) {
@@ -109,7 +113,8 @@ class Component extends React.Component<{}, ComponentState> {
                setLoginData: (e) => this.setLoginData(e),
                setRoomData: (room, users) => this.setRoomData(room, users),
                setMessageData: (data) => this.setMessageData(data),
-               setLocationData: (data) => this.setLocationData(data)
+               setLocationData: (data) => this.setLocationData(data),
+               cleraMessageData: () => this.cleraMessageData()
             }}
          >
             <Routes />
