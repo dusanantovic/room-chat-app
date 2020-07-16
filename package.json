@@ -8,7 +8,7 @@
     "dev": "concurrently 'npm run react-start' 'npm run dev-server'",
     "dev-server": "nodemon api/index.js",
     "react-start": "react-scripts start",
-    "react-build": "react-scripts start"
+    "react-build": "react-scripts build"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
