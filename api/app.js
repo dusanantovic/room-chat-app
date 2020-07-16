@@ -5,12 +5,18 @@ const Filter = require("bad-words");
 const { generateMessage, generateLocationMessage } = require("./utils/messages");
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users");
 
-const app = express();
+// const routes = new express.Router();
 
+// routes.get("/", (req, res) => {
+//     res.send("asdsss");
+// });
+
+const app = express();
 const server = http.createServer(app); // raw http server
 const io = socketio(server); // expect raw http server
 
 app.use(express.json()); // Auto parse json
+app.use(express.static(__dirname + '../build'));
 
 io.on("connection", (socket) => {
 
