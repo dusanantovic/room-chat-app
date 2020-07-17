@@ -6,7 +6,7 @@
     "start": "node api/index.js",
     "build": "react-scripts build",
     "dev": "concurrently 'npm run react-start' 'npm run dev-server'",
-    "react-start": "react-scripts start",
+    "react-start": "cross-env REACT_APP_STAGE=local react-scripts start",
     "dev-server": "nodemon api/index.js"
   },
   "dependencies": {
@@ -31,7 +31,8 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/socket.io-client": "^1.4.33",
-    "concurrently": "^5.2.0"
+    "concurrently": "^5.2.0",
+    "cross-env": "^7.0.2"
   },
   "eslintConfig": {
     "extends": "react-app"

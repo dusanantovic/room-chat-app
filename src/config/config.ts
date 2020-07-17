@@ -10,11 +10,9 @@ const configProd = {
 
 let selectedConfig: Config | null = null;
 
-console.log(process.env.NODE_ENV);
-
-switch (process.env.NODE_ENV) {
-    case "development": selectedConfig = configLocal; break;
-    case "production": selectedConfig = configProd; break;
+switch (process.env.REACT_APP_STAGE) {
+    case "local": selectedConfig = configLocal; break;
+    case "prod": selectedConfig = configProd; break;
 }
 
 export const config = selectedConfig;
