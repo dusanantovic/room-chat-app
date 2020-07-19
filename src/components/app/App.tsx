@@ -42,12 +42,10 @@ class Component extends React.Component<{}, ComponentState> {
             this.setState({ socket }, () => {
                const url = history.location.pathname;
                if(room && username && url.includes("chat_room")) {
-                  // Check is room and username already added
                   socket.emit("join", { username, room }, (error: string) => {
-                     if (!error) { // New user
-                        socket.emit("logout", { username, room }, () => {
-                           history.push("/");
-                        });
+                     if (error) {
+                        alert(error);
+                        return history.push("/");
                      }
                   });
                } else {
