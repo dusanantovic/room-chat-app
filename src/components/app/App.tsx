@@ -5,6 +5,8 @@ import { Routes } from "../Routes";
 import { MessageData, MessageDataLocation, User, RoomData } from "../../interfaces";
 import { ChatManager } from "../../chat";
 import { config } from "../../config";
+import { MuiThemeProvider } from "@material-ui/core";
+import { theme } from "../../theme";
 
 export const history = createHashHistory();
 
@@ -72,6 +74,21 @@ class Component extends React.Component<{}, ComponentState> {
       this.setState({ room, users });
    }
 
+   logout(redirect: boolean) {
+      const { socket, username, room } = this.state;
+      if(socket) {
+         socket.emit("logout", { username, room }, () => {
+            this.cleraMessageData();
+            console.log("Logout!");
+            if (redirect) {
+               history.push("/");
+            }
+         });
+      } else {
+         history.push("/");
+      }
+   }
+
    setLocationData(data: MessageDataLocation) {
       const { messageData } = this.state;
       messageData.push({
@@ -114,10 +131,12 @@ class Component extends React.Component<{}, ComponentState> {
                setRoomData: (room, users) => this.setRoomData(room, users),
                setMessageData: (data) => this.setMessageData(data),
                setLocationData: (data) => this.setLocationData(data),
-               cleraMessageData: () => this.cleraMessageData()
+               logout: (redirect) => this.logout(redirect)
             }}
          >
-            <Routes />
+            <MuiThemeProvider theme={theme}>
+               <Routes />
+            </MuiThemeProvider>
          </ChatManager.ChatStateContext.Provider>
       );
    }

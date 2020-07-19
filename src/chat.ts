@@ -12,7 +12,7 @@ const ChatStateContext = React.createContext({
    setRoomData: (room: string, users: User[]) => {},
    setMessageData: (data: MessageData) => {},
    setLocationData: (data: MessageDataLocation) => {},
-   cleraMessageData: () => {}
+   logout: (redirect: boolean) => {}
 });
 
 const getFormatedTime = (createdAt: number) => moment(createdAt).format("h:mm A");

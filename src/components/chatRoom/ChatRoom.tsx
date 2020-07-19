@@ -2,10 +2,71 @@ import * as React from "react";
 import isUrl from "is-url";
 import { Sidebar } from "./Sidebar";
 import { MessageData } from "../../interfaces";
+import { withStyles, Theme, TextField, Button } from "@material-ui/core";
+import { buttonStyle } from "../../theme";
+import { ChatManager } from "../../chat";
+
+const styles = (theme: Theme) => ({
+    root: {
+        display: "flex"
+    },
+    fullWidth: {
+        display: "flex",
+        width: "100%"
+    },
+    chatWrapper: {
+        maxHeight: "100vh",
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column"
+    },
+    chatMessageWrapper: {
+        flexGrow: "1",
+        padding: "24px 24px 0px 24px",
+        overflowY: "scroll"
+    },
+    message: {
+        marginBottom: "18px"
+    },
+    messageTitle: {
+        ...theme.typography.subtitle1,
+        fontSize: "16px",
+        marginRight: "8px"
+    },
+    messageMeta: {
+        ...theme.typography.subtitle2,
+        fontSize: "14px",
+        color: "#777777"
+    },
+    messageText: theme.typography.body1,
+    messageInputWrapper: {
+        display: "flex",
+        flexShrink: 0,
+        marginTop: "16px",
+        padding: "0px 24px 24px 24px",
+        "& form": {
+            height: "50px",
+            display: "flex",
+            alignItems: "center",
+            width: "100%"
+        }
+    },
+    messageInput: {
+        border: "1px solid #edecec",
+        padding: "8px 14px",
+        width: "100%"
+    },
+    sendButton: {
+        ...buttonStyle(theme),
+        marginLeft: "16px",
+        height: "50px"
+    }
+});
 
 interface ComponentProps {
     socket: SocketIOClient.Socket;
     messageData: MessageData[];
+    classes?: any;
 }
 
 interface ComponentState {
@@ -46,68 +107,63 @@ class Component extends React.Component<ComponentProps, ComponentState> {
         });
     }
 
-    shareLocation() {
-        const { socket } = this.props;
-        if(!navigator.geolocation) {
-            return alert("Geolocation is not supported by your browser");
-        }
-        const shareLocationButton = document.querySelector("#shareLocation")!;
-        shareLocationButton.setAttribute("disabled", "disabled");
-        navigator.geolocation.getCurrentPosition((postition) => {
-            socket.emit("sendLocation", {
-                lat: postition.coords.latitude,
-                lng: postition.coords.longitude
-            }, () => {
-                shareLocationButton.removeAttribute("disabled");
-                console.log("Location Shared!");
-            });
-        });
-    }
-
     messageOnChange(e: any) {
         this.setState({ message: e.target.value });
     }
 
     render() {
-        const { messageData } = this.props;
+        const { messageData, classes } = this.props;
         const { message } = this.state;
         return (
-            <div>
-                <div className="chat">
-                    <div id="sidebarContainer" className="chat__sidebar">
-                        <Sidebar />
-                    </div>
-                    <div className="chat__main">
-                        <div id="messagesContainer" className="chat__messages">
+            <div className={classes.root}>
+                <ChatManager.ChatStateContext.Consumer>
+                    {state => (
+                        <Sidebar logout={state.logout} />
+                    )}
+                </ChatManager.ChatStateContext.Consumer>
+                <div className={classes.fullWidth}>
+                    <div className={classes.chatWrapper}>
+                        <div id="messagesContainer" className={classes.chatMessageWrapper}>
                             {messageData.map((data, i) => (
-                                <div className="message" key={i}>
+                                <div className={classes.message} key={i}>
                                     <p>
-                                        <span className="message__name">{data.username}</span>
-                                        <span className="message__meta">{data.createdAt}</span>
+                                        <span className={classes.messageTitle}>{data.username}</span>
+                                        <span className={classes.messageMeta}>{data.createdAt}</span>
                                     </p>
                                     {isUrl(data.text) ?
-                                        (<a href={data.text} target="_blank" rel="noopener noreferrer">My current location</a>)
+                                        (
+                                            <a className={classes.messageText} href={data.text} target="_blank" rel="noopener noreferrer">
+                                                My current location
+                                            </a>
+                                        )
                                     :
-                                        (<p>{data.text}</p>)
+                                        (
+                                            <p className={classes.messageText}>
+                                                {data.text}
+                                            </p>
+                                        )
                                     }
                                 </div>
                             ))}
                         </div>
-                        <div className="compose">
+                        <div className={classes.messageInputWrapper}>
                             <form id="messageForm" onSubmit={(e) => this.sendMessage(e)}>
-                                <input 
+                                <TextField
                                     value={message}
                                     onChange={(e) => this.messageOnChange(e)}
                                     name="message"
                                     placeholder="Enter message"
                                     required
                                     autoComplete="off"
+                                    className={classes.messageInput}
+                                    InputProps={{
+                                        disableUnderline: true
+                                    }}
                                 />
-                                <button>Send</button>
+                                <Button type="submit" className={classes.sendButton}>
+                                    Send
+                                </Button>
                             </form>
-                            <button onClick={() => this.shareLocation()} id="shareLocation" type="submit">
-                                Share Location
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -116,4 +172,4 @@ class Component extends React.Component<ComponentProps, ComponentState> {
     }
 }
 
-export const ChatRoom = Component;
+export const ChatRoom = withStyles(styles as any)(Component);

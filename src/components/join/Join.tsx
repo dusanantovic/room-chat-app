@@ -1,20 +1,7 @@
 import * as React from "react";
 import { Card, CardHeader, TextField, Button, CardContent, CardActions, withStyles, Theme, Grid } from "@material-ui/core";
 import { history } from "../app";
-
-export const buttonStyle = (theme: Theme) => ({
-    backgroundColor: "#eb4034",
-    border: "2px solid #eb4034",
-    borderRadius: "4px",
-    color: "#ffffff",
-    transition: "all 0.4s",
-    textTransform: "none",
-    "&:hover": {
-        transition: "all 0.4s",
-        backgroundColor: "#ffffff",
-        color: "#eb4034"
-    }
-});
+import { buttonStyle } from "../../theme";
 
 const styles = (theme: Theme) => ({
     container: {
@@ -37,8 +24,8 @@ const styles = (theme: Theme) => ({
         }
     },
     header: {
-        color: "#ffffff",
-        backgroundColor: "#eb4034"
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText
     },
     actionRoot: {
         marginTop: "24px",
@@ -52,7 +39,7 @@ const styles = (theme: Theme) => ({
 
 interface ComponentProps {
     socket: SocketIOClient.Socket;
-    cleraMessageData: () => void;
+    logout: (redirect: boolean) => void;
     classes?: any;
 }
 
@@ -73,12 +60,9 @@ class Component extends React.Component<ComponentProps, ComponentState> {
 
     componentDidMount() {
         const { username, room } = this.state;
-        const { socket, cleraMessageData } = this.props;
+        const { logout } = this.props;
         if(username && room) {
-            socket.emit("logout", { username, room }, () => {
-                cleraMessageData();
-                console.log("Logout!");
-            });
+            logout(false);
         }
     }
 

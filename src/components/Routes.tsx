@@ -12,7 +12,7 @@ const Component = () => (
                 {state => (
                     <Join
                         socket={state.socket!}
-                        cleraMessageData={state.cleraMessageData}
+                        logout={state.logout}
                     />
                 )}
             </ChatManager.ChatStateContext.Consumer>

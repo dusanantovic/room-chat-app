@@ -1,20 +1,143 @@
 import * as React from "react";
 import { ChatManager } from "../../chat";
+import { IconButton, Drawer, withStyles, Theme, Button } from "@material-ui/core";
+import { Menu } from "@material-ui/icons";
+import { buttonStyle } from "../../theme";
 
-const Component = () => (
-    <ChatManager.ChatStateContext.Consumer>
-        {state => (
-            <React.Fragment>
-                <h2 className="room-title">{state.room}</h2>
-                <h3 className="list-title">Users</h3>
-                <ul className="users">
-                {state.users.map((user, i) => (
-                    <li key={i}>{user.username}</li>
-                ))}
-                </ul>
-            </React.Fragment>
-        )}
-    </ChatManager.ChatStateContext.Consumer>
-);
+const buttonsStyle = (theme: Theme) => ({
+    ...buttonStyle(theme),
+    maxWidth: "100%"
+});
 
-export const Sidebar = Component;
+const styles = (theme: Theme) => ({
+    root: {
+        backgroundColor: theme.palette.primary.main,
+        height: "100vh"
+    },
+    buttonRoot: {
+        color: theme.palette.primary.contrastText
+    },
+    sidebarRoot: {
+        width: "20%",
+        [theme.breakpoints.only("xs")]: {
+            width: "50%"
+        }
+    },
+    roomTitle: {
+        paddingLeft: "24px",
+        height: "100px",
+        display: "flex",
+        alignItems: "center",
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+        ...theme.typography.subtitle1
+    },
+    usersTitle: {
+        paddingLeft: "24px",
+        height: "50px",
+        display: "flex",
+        alignItems: "center",
+        borderBottom: "1px solid #edecec",
+        ...theme.typography.subtitle2
+    },
+    userList: {
+        "& li": {
+            margin: "0px 24px",
+            height: "25px",
+            display: "flex",
+            alignItems: "center",
+            ...theme.typography.body2
+        }
+    },
+    you: {
+        fontWeight: "400 !important"
+    },
+    grow: {
+        flexGrow: 1
+    },
+    shareButton: {
+        ...buttonsStyle(theme),
+        margin: "24px 24px 0px 24px"
+    },
+    logoutButton: {
+        ...buttonsStyle(theme),
+        margin: "24px"
+    }
+});
+
+interface ComponentProps {
+    logout: (redirect: boolean) => void;
+    classes?: any;
+}
+
+const shareLocation = (socket: SocketIOClient.Socket) => {
+    if(!navigator.geolocation) {
+        return alert("Geolocation is not supported by your browser");
+    }
+    const shareLocationButton = document.querySelector("#shareLocation")!;
+    shareLocationButton.setAttribute("disabled", "disabled");
+    navigator.geolocation.getCurrentPosition((postition) => {
+        socket.emit("sendLocation", {
+            lat: postition.coords.latitude,
+            lng: postition.coords.longitude
+        }, () => {
+            shareLocationButton.removeAttribute("disabled");
+            console.log("Location Shared!");
+        });
+    });
+}
+
+const Component = ({ logout, classes, ...props }: ComponentProps) => {
+    const [open, setState] = React.useState(false);
+    return (
+        <div className={classes.root}>
+            <IconButton className={classes.buttonRoot} onClick={() => setState(true)}>
+                <Menu />
+            </IconButton>
+            <Drawer
+                open={open}
+                onClose={() => setState(false)}
+                classes={{
+                    paper: classes.sidebarRoot
+                }}
+            >
+                <ChatManager.ChatStateContext.Consumer>
+                    {state => (
+                        <React.Fragment>
+                            <div className={classes.roomTitle}>
+                                {state.room}
+                            </div>
+                            <div className={classes.usersTitle}>
+                                Users
+                            </div>
+                            <ul className={classes.userList}>
+                                {state.users.map((user, i) => (
+                                    <li key={i} className={user.username === state.username ? classes.you : ""}>
+                                        {user.username}
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className={classes.grow} />
+                            <Button
+                                id="shareLocation"
+                                onClick={() => shareLocation(state.socket!)}
+                                className={classes.shareButton}
+                            >
+                                Share Location
+                            </Button>
+                            <Button
+                                id="shareLocation"
+                                onClick={() => logout(true)}
+                                className={classes.logoutButton}
+                            >
+                                Logout
+                            </Button>
+                        </React.Fragment>
+                    )}
+                </ChatManager.ChatStateContext.Consumer>
+            </Drawer>
+        </div>
+    );
+}
+
+export const Sidebar = withStyles(styles as any)(Component);
