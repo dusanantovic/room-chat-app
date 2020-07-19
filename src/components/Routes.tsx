@@ -10,7 +10,10 @@ const Component = () => (
         <Route path="/" exact={true}>
             <ChatManager.ChatStateContext.Consumer>
                 {state => (
-                    <Join socket={state.socket!} />
+                    <Join
+                        socket={state.socket!}
+                        cleraMessageData={state.cleraMessageData}
+                    />
                 )}
             </ChatManager.ChatStateContext.Consumer>
         </Route>
@@ -20,7 +23,6 @@ const Component = () => (
                     <ChatRoom
                         socket={state.socket!}
                         messageData={state.messageData}
-                        cleraMessageData={state.cleraMessageData}
                     />
                 )}
             </ChatManager.ChatStateContext.Consumer>

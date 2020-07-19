@@ -37,15 +37,17 @@ class Component extends React.Component<{}, ComponentState> {
       const { room, username } = this.state;
       if(config) {
          const socket = io(config.apiUrl);
-         console.log(config.apiUrl);
          socket.on("connect", () => {
             console.log("Connected!");
             this.setState({ socket }, () => {
-               if(room && username) {
+               const url = history.location.pathname;
+               if(room && username && url.includes("chat_room")) {
+                  // Check is room and username already added
                   socket.emit("join", { username, room }, (error: string) => {
-                     if (error) {
-                        alert(error);
-                        return history.push("/");
+                     if (!error) { // New user
+                        socket.emit("logout", { username, room }, () => {
+                           history.push("/");
+                        });
                      }
                   });
                } else {

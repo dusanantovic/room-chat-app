@@ -51,7 +51,8 @@ const styles = (theme: Theme) => ({
 });
 
 interface ComponentProps {
-    socket: SocketIOClient.Socket
+    socket: SocketIOClient.Socket;
+    cleraMessageData: () => void;
     classes?: any;
 }
 
@@ -68,6 +69,17 @@ class Component extends React.Component<ComponentProps, ComponentState> {
             username: localStorage.getItem("username") || "",
             room: localStorage.getItem("room") || ""
         };
+    }
+
+    componentDidMount() {
+        const { username, room } = this.state;
+        const { socket, cleraMessageData } = this.props;
+        if(username && room) {
+            socket.emit("logout", { username, room }, () => {
+                cleraMessageData();
+                console.log("Logout!");
+            });
+        }
     }
 
     join() {

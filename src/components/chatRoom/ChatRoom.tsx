@@ -2,12 +2,10 @@ import * as React from "react";
 import isUrl from "is-url";
 import { Sidebar } from "./Sidebar";
 import { MessageData } from "../../interfaces";
-import { history } from "../app";
 
 interface ComponentProps {
     socket: SocketIOClient.Socket;
     messageData: MessageData[];
-    cleraMessageData: () => void;
 }
 
 interface ComponentState {
@@ -23,15 +21,6 @@ class Component extends React.Component<ComponentProps, ComponentState> {
             message: "",
             setTyping: false
         };
-    }
-
-    componentWillUnmount() {
-        const { socket, cleraMessageData } = this.props;
-        socket.emit("logout", () => {
-            cleraMessageData();
-            console.log("Logout!");
-            history.push("/");
-        });
     }
 
     sendMessage(e: any) {

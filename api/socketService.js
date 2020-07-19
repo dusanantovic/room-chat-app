@@ -4,22 +4,6 @@ const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users"
 
 const socketService = (socket, io) => {
 
-    const disconnectUser = () => {
-        const user = removeUser(socket.id);
-        if(user) {
-            io.to(user.room).emit("message", generateMessage("Chat App Admin", `${user.username} has left!`));
-            io.to(user.room).emit("roomData", {
-                room: user.room,
-                users: getUsersInRoom(user.room)
-            });
-        }
-    }
-
-    socket.on("logout", (callback) => {
-        disconnectUser();
-        callback();
-    });
-
     socket.on("join", (options, callback) => {
         const { error, user } = addUser({ id: socket.id, ...options });
         if (error) {
@@ -55,7 +39,29 @@ const socketService = (socket, io) => {
         }
     });
 
+    const disconnectUser = (username = "", room = "") => {
+        let user = removeUser(socket.id);
+        if(username && room) {
+            const users = getUsersInRoom(room);
+            const userFromRoom = users.find(u => u === username.trim().toLowerCase());
+            user = userFromRoom || user;
+        }
+        if(user) {
+            io.to(user.room).emit("message", generateMessage("Chat App Admin", `${user.username} has left!`));
+            io.to(user.room).emit("roomData", {
+                room: user.room,
+                users: getUsersInRoom(user.room)
+            });
+        }
+    }
+
     socket.on("disconnect", () => disconnectUser());
+
+    socket.on("logout", (data, callback) => {
+        disconnectUser(data.username, data.room);
+        callback();
+    });
+
 }
 
 module.exports = socketService;
