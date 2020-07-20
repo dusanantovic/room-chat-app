@@ -38,7 +38,6 @@ const styles = (theme: Theme) => ({
 });
 
 interface ComponentProps {
-    socket: SocketIOClient.Socket;
     logout: (redirect: boolean) => void;
     classes?: any;
 }
@@ -53,8 +52,8 @@ class Component extends React.Component<ComponentProps, ComponentState> {
     constructor(props: ComponentProps) {
         super(props);
         this.state = {
-            username: localStorage.getItem("username") || "",
-            room: localStorage.getItem("room") || ""
+            username: "",
+            room: ""
         };
     }
 
@@ -67,7 +66,6 @@ class Component extends React.Component<ComponentProps, ComponentState> {
     }
 
     join() {
-        const { socket } = this.props;
         const { username, room } = this.state;
         if (!username) {
             return alert("Username is required");
@@ -75,15 +73,9 @@ class Component extends React.Component<ComponentProps, ComponentState> {
         if (!room) {
             return alert("Room is required");
         }
-        socket.emit("join", { username, room }, (error: string) => {
-            if (error) {
-                alert(error);
-                return;
-            }
-            localStorage.setItem("username", username);
-            localStorage.setItem("room", room);
-            history.push("/chat_room");
-        });
+        localStorage.setItem("username", username);
+        localStorage.setItem("room", room);
+        history.push("/chat_room");
     }
 
     onChange(e: any) {

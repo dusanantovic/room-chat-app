@@ -5,6 +5,7 @@ import { MessageData } from "../../interfaces";
 import { withStyles, Theme, TextField, Button } from "@material-ui/core";
 import { buttonStyle } from "../../theme";
 import { ChatManager } from "../../chat";
+import { Prompt } from "react-router-dom";
 
 const styles = (theme: Theme) => ({
     root: {
@@ -73,6 +74,7 @@ const styles = (theme: Theme) => ({
 interface ComponentProps {
     socket: SocketIOClient.Socket;
     messageData: MessageData[];
+    join: () => void;
     classes?: any;
 }
 
@@ -92,6 +94,11 @@ class Component extends React.Component<ComponentProps, ComponentState> {
             message: "",
             startTyping: false
         };
+    }
+
+    componentDidMount() {
+        const { join } = this.props;
+        join();
     }
 
     sendMessage(e: any) {
@@ -143,6 +150,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
         const { message } = this.state;
         return (
             <div className={classes.root}>
+                <Prompt message="If you leave this page, you will be automatically signed out. Do you want to proceed?" />
                 <ChatManager.ChatStateContext.Consumer>
                     {state => (
                         <Sidebar logout={state.logout} />

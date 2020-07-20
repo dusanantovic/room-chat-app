@@ -13,6 +13,7 @@ const ChatStateContext = React.createContext({
    setRoomData: (room: string, users: User[]) => {},
    setMessageData: (data: MessageData) => {},
    setLocationData: (data: MessageDataLocation) => {},
+   join: () => {},
    logout: (redirect: boolean) => {}
 });
 

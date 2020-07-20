@@ -39,18 +39,17 @@ class Component extends React.Component<{}, ComponentState> {
 
    join() {
       const { socket, room, username } = this.state;
-      const url = history.location.pathname;
-      if (url === "/chat_room") {
-         if(room && username) {
-            socket!.emit("join", { username, room }, (error: string) => {
-               if (error) {
-                  alert(error);
-                  return history.push("/");
-               }
-            });
-         } else {
-            return history.push("/");
-         }
+      const storageUsername = localStorage.getItem("username") || username;
+      const storageRoom = localStorage.getItem("room") || room
+      if(storageUsername && storageRoom) {
+         socket!.emit("join", { username: storageUsername, room: storageRoom }, (error: string) => {
+            if (error) {
+               alert(error);
+               return history.push("/");
+            }
+         });
+      } else {
+         return history.push("/");
       }
    }
 
@@ -59,12 +58,7 @@ class Component extends React.Component<{}, ComponentState> {
          const socket = io(config.apiUrl);
          socket.on("connect", () => {
             console.log("Connected!");
-            this.setState({ socket }, () => {
-               this.join();
-               history.listen(() => {
-                  this.join();
-               });
-            });
+            this.setState({ socket });
          });
          socket.on("logout", () => {
             this.setState({ messageData: [] });
@@ -102,6 +96,8 @@ class Component extends React.Component<{}, ComponentState> {
       if(socket) {
          socket.emit("logout", { username, room }, () => {
             this.cleraMessageData();
+            localStorage.removeItem("username");
+            localStorage.removeItem("room");
             console.log("Logout!");
             if (redirect) {
                history.push("/");
@@ -154,6 +150,7 @@ class Component extends React.Component<{}, ComponentState> {
                setRoomData: (room, users) => this.setRoomData(room, users),
                setMessageData: (data) => this.setMessageData(data),
                setLocationData: (data) => this.setLocationData(data),
+               join: () => this.join(),
                logout: (redirect) => this.logout(redirect)
             }}
          >
