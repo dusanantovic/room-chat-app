@@ -37,24 +37,33 @@ class Component extends React.Component<{}, ComponentState> {
       this.setState({ ...this.state, [e.target.name]: e.target.value });
    }
 
+   join() {
+      const { socket, room, username } = this.state;
+      const url = history.location.pathname;
+      if (url === "/chat_room") {
+         if(room && username) {
+            socket!.emit("join", { username, room }, (error: string) => {
+               if (error) {
+                  alert(error);
+                  return history.push("/");
+               }
+            });
+         } else {
+            return history.push("/");
+         }
+      }
+   }
+
    componentDidMount() {
-      const { room, username } = this.state;
       if(config) {
          const socket = io(config.apiUrl);
          socket.on("connect", () => {
             console.log("Connected!");
             this.setState({ socket }, () => {
-               const url = history.location.pathname;
-               if(room && username && url.includes("chat_room")) {
-                  socket.emit("join", { username, room }, (error: string) => {
-                     if (error) {
-                        alert(error);
-                        return history.push("/");
-                     }
-                  });
-               } else {
-                  return history.push("/");
-               }
+               this.join();
+               history.listen(() => {
+                  this.join();
+               });
             });
          });
          socket.on("logout", () => {

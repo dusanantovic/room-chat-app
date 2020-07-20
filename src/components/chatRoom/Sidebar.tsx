@@ -19,7 +19,7 @@ const styles = (theme: Theme) => ({
     },
     sidebarRoot: {
         width: "20%",
-        [theme.breakpoints.only("xs")]: {
+        [theme.breakpoints.down("sm")]: {
             width: "50%"
         }
     },
@@ -48,6 +48,10 @@ const styles = (theme: Theme) => ({
             alignItems: "center",
             ...theme.typography.body2
         }
+    },
+    typing: {
+        marginLeft: "8px",
+        color: "#9b9b9b"
     },
     you: {
         fontWeight: "400 !important"
@@ -111,11 +115,17 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                                 Users
                             </div>
                             <ul className={classes.userList}>
-                                {state.users.map((user, i) => (
-                                    <li key={i} className={user.username === state.username ? classes.you : ""}>
-                                        {user.username}
-                                    </li>
-                                ))}
+                                {state.users.map((user, i) => {
+                                    let typing = false;
+                                    if(state.typing.length > 0) {
+                                        typing = !!state.typing.find(t => t.username === user.username && t.typing);
+                                    }
+                                    return (
+                                        <li key={i} className={user.username === state.username ? classes.you : ""}>
+                                            {user.username} {typing ? <span className={[classes.typing, "pulse"].join(" ")}>typing...</span> : ""}
+                                        </li>
+                                    );
+                                })}
                             </ul>
                             <div className={classes.grow} />
                             <Button

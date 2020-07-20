@@ -1,18 +1,21 @@
 const users = [];
 
+const getTrimAndLowerCaseValue = (value) => value.trim().toLowerCase();
+
 const addUser = ({ id, username, room }) => {
     // Clean the data
-    username = username.trim().toLowerCase();
-    room = room.trim().toLowerCase();
     // Validate the data
-    if(!username || !room) {
+    if(!getTrimAndLowerCaseValue(username) || !getTrimAndLowerCaseValue(room)) {
         return {
             error: "Username and room are required!",
             user: null
         };
     }
     // Check for existing user
-    const isUsernameExistInRoom = users.some(user => user.username === username && user.room === room);
+    const isUsernameExistInRoom = users.some(user => 
+        getTrimAndLowerCaseValue(user.username) === getTrimAndLowerCaseValue(username) &&
+        getTrimAndLowerCaseValue(user.room) === getTrimAndLowerCaseValue(room)
+    );
     // Validate username
     if (isUsernameExistInRoom) {
         return {
@@ -21,7 +24,12 @@ const addUser = ({ id, username, room }) => {
         };
     }
     // Store user
-    const user = { id, username, room };
+    const existRoomInUsers = users.find(user => getTrimAndLowerCaseValue(user.room) === getTrimAndLowerCaseValue(room));
+    const user = {
+        id,
+        username: username.trim(),
+        room: existRoomInUsers ? existRoomInUsers.room : room.trim()
+    };
     users.push(user);
     return {
         error: "",
@@ -38,7 +46,7 @@ const removeUser = (id) => {
 
 const getUser = (id) => users.find(user => user.id === id);
 
-const getUsersInRoom = (room) => users.filter(user => user.room === room);
+const getUsersInRoom = (room) => users.filter(user => getTrimAndLowerCaseValue(user.room) === getTrimAndLowerCaseValue(room));
 
 module.exports = {
     addUser,

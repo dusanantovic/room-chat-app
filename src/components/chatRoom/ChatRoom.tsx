@@ -42,7 +42,6 @@ const styles = (theme: Theme) => ({
     messageInputWrapper: {
         display: "flex",
         flexShrink: 0,
-        marginTop: "32px",
         padding: "0px 24px 24px 24px",
         "& form": {
             position: "relative",
@@ -182,7 +181,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                                             return <React.Fragment />;
                                         }
                                         return (
-                                            <div className={classes.typingWrapper}>
+                                            <div className={[classes.typingWrapper, "pulse"].join(" ")}>
                                                 {state.typing.map(t => t.username).join(", ")} typing...
                                             </div>
                                         );

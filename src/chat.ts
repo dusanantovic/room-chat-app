@@ -29,8 +29,7 @@ const autoScroll = () => {
             parseInt(newMessageStyles.marginTop) +
             parseInt(newMessageStyles.marginBottom) +
             parseInt(newMessageStyles.paddingTop) +
-            parseInt(newMessageStyles.paddingBottom) +
-            parseInt(newMessageStyles.lineHeight)
+            parseInt(newMessageStyles.paddingBottom)
          );
          const newMessageHeight = newMessage.offsetHeight + newMessageMargin;
          // Visible screen
