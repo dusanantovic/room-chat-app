@@ -70,7 +70,7 @@ const styles = (theme: Theme) => ({
 });
 
 interface ComponentProps {
-    logout: (redirect: boolean) => void;
+    logout: () => void;
     classes?: any;
 }
 
@@ -137,7 +137,7 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                             </Button>
                             <Button
                                 id="shareLocation"
-                                onClick={() => logout(true)}
+                                onClick={() => logout()}
                                 className={classes.logoutButton}
                             >
                                 Logout

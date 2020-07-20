@@ -75,12 +75,14 @@ interface ComponentProps {
     socket: SocketIOClient.Socket;
     messageData: MessageData[];
     join: () => void;
+    logout: (redirect: boolean) => void;
     classes?: any;
 }
 
 interface ComponentState {
     message: string;
     startTyping: boolean;
+    allowPrompt: boolean;
 }
 
 class Component extends React.Component<ComponentProps, ComponentState> {
@@ -92,7 +94,8 @@ class Component extends React.Component<ComponentProps, ComponentState> {
         this.debounceTime = null;
         this.state = {
             message: "",
-            startTyping: false
+            startTyping: false,
+            allowPrompt: true
         };
     }
 
@@ -145,17 +148,22 @@ class Component extends React.Component<ComponentProps, ComponentState> {
         });
     }
 
+    callLogout() {
+        const { logout } = this.props;
+        this.setState({ allowPrompt: false });
+        logout(true);
+    }
+
     render() {
         const { messageData, classes } = this.props;
-        const { message } = this.state;
+        const { allowPrompt, message } = this.state;
         return (
             <div className={classes.root}>
-                <Prompt message="If you leave this page, you will be automatically signed out. Do you want to proceed?" />
-                <ChatManager.ChatStateContext.Consumer>
-                    {state => (
-                        <Sidebar logout={state.logout} />
-                    )}
-                </ChatManager.ChatStateContext.Consumer>
+                <Prompt
+                    when={allowPrompt}
+                    message="If you leave this page, you will be automatically signed out. Do you want to proceed?"
+                />
+                <Sidebar logout={() => this.callLogout()} />
                 <div className={classes.fullWidth}>
                     <div className={classes.chatWrapper}>
                         <div id="messagesContainer" className={classes.chatMessageWrapper}>

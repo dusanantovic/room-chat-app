@@ -21,6 +21,7 @@ const Component = () => (
                         socket={state.socket!}
                         messageData={state.messageData}
                         join={state.join}
+                        logout={state.logout}
                     />
                 )}
             </ChatManager.ChatStateContext.Consumer>
