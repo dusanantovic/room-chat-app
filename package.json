@@ -15,6 +15,7 @@
     "bad-words": "^3.0.3",
     "express": "^4.17.1",
     "is-url": "^1.2.4",
+    "material-ui-color-picker": "^3.5.0",
     "moment": "^2.27.0",
     "qs": "^6.9.4",
     "react": "^16.13.1",

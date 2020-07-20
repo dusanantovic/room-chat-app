@@ -1,6 +1,7 @@
 import React from "react";
 import moment from "moment";
 import { User, MessageData, MessageDataLocation, Typing } from "./interfaces";
+import { Theme } from "@material-ui/core";
 
 const ChatStateContext = React.createContext({
    socket: null as SocketIOClient.Socket | null,
@@ -9,10 +10,12 @@ const ChatStateContext = React.createContext({
    users: [] as User[],
    messageData: [] as MessageData[],
    typing: [] as Typing[],
+   theme: {} as Theme,
    setLoginData: (e: any) => {},
    setRoomData: (room: string, users: User[]) => {},
    setMessageData: (data: MessageData) => {},
    setLocationData: (data: MessageDataLocation) => {},
+   changePrimaryColor: (color: string) => {},
    join: () => {},
    logout: (redirect: boolean) => {}
 });

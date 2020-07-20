@@ -5,7 +5,7 @@ import { Routes } from "../Routes";
 import { MessageData, MessageDataLocation, User, RoomData, Typing } from "../../interfaces";
 import { ChatManager } from "../../chat";
 import { config } from "../../config";
-import { MuiThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider, Theme, createMuiTheme } from "@material-ui/core";
 import { theme } from "../../theme";
 
 export const history = createHashHistory();
@@ -17,9 +17,12 @@ interface ComponentState {
    users: User[];
    messageData: MessageData[];
    typing: Typing[];
+   theme: Theme;
 }
 
 class Component extends React.Component<{}, ComponentState> {
+
+   debounceTimer: NodeJS.Timeout | null;
 
    constructor() {
       super({});
@@ -29,8 +32,10 @@ class Component extends React.Component<{}, ComponentState> {
          username: localStorage.getItem("username") || "",
          users: [],
          messageData: [],
-         typing: []
+         typing: [],
+         theme
       };
+      this.debounceTimer = null;
    }
 
    setLoginData(e: any) {
@@ -137,8 +142,23 @@ class Component extends React.Component<{}, ComponentState> {
       this.setState({ messageData: [] });
    }
 
+   changePrimaryColor(color: string) {
+      let { theme } = this.state;
+      if(color) {
+         if(typeof this.debounceTimer === "number") {
+            clearTimeout(this.debounceTimer);
+         }
+         this.debounceTimer = setTimeout(() => {
+            theme.palette.primary.main = color;
+            theme = createMuiTheme(theme);
+            this.setState({ theme });
+            localStorage.setItem("primaryColor", color);
+         }, 300);
+      }
+   }
+
    render() {
-      const { socket } = this.state;
+      const { socket, theme } = this.state;
       if(!socket) {
          return <React.Fragment />;
       }
@@ -150,6 +170,7 @@ class Component extends React.Component<{}, ComponentState> {
                setRoomData: (room, users) => this.setRoomData(room, users),
                setMessageData: (data) => this.setMessageData(data),
                setLocationData: (data) => this.setLocationData(data),
+               changePrimaryColor: (color) => this.changePrimaryColor(color),
                join: () => this.join(),
                logout: (redirect) => this.logout(redirect)
             }}

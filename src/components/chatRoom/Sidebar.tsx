@@ -2,6 +2,7 @@ import * as React from "react";
 import { ChatManager } from "../../chat";
 import { IconButton, Drawer, withStyles, Theme, Button } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
+import ColorPicker from "material-ui-color-picker";
 import { buttonStyle } from "../../theme";
 
 const buttonsStyle = (theme: Theme) => ({
@@ -58,6 +59,27 @@ const styles = (theme: Theme) => ({
     },
     grow: {
         flexGrow: 1
+    },
+    changeColorWrapper: {
+        margin: "24px 24px 0px 24px",
+        display: "flex",
+        alignItems: "center"
+    },
+    colorPickerField: {
+        cursor: "pointer",
+        border: `1px solid ${theme.palette.primary.main}`,
+        borderRadius: "4px",
+        width: "40px",
+        padding: "4px 8px",
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+        "& input": {
+            cursor: "pointer"
+        }
+    },
+    changeColorText: {
+        ...theme.typography.body1,
+        marginLeft: "8px"
     },
     shareButton: {
         ...buttonsStyle(theme),
@@ -128,6 +150,18 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                                 })}
                             </ul>
                             <div className={classes.grow} />
+                            <div className={classes.changeColorWrapper}>
+                                <ColorPicker
+                                    name="color"
+                                    value=""
+                                    onChange={(color: string) => state.changePrimaryColor(color)}
+                                    className={classes.colorPickerField}
+                                    InputProps={{
+                                        disableUnderline: true
+                                    }}
+                                />
+                                <div className={classes.changeColorText}>Change Website Color</div>
+                            </div>
                             <Button
                                 id="shareLocation"
                                 onClick={() => shareLocation(state.socket!)}
@@ -136,7 +170,6 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                                 Share Location
                             </Button>
                             <Button
-                                id="shareLocation"
                                 onClick={() => logout()}
                                 className={classes.logoutButton}
                             >

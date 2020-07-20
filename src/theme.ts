@@ -3,7 +3,7 @@ import { Theme, createMuiTheme } from "@material-ui/core";
 const cssOverrides = {
     palette: {
         primary: {
-            main: "#eb4034",
+            main: localStorage.getItem("primaryColor") || "#eb4034",
             contrastText: "#ffffff"
         },
         secondary: {
@@ -39,7 +39,7 @@ export const theme = createMuiTheme(cssOverrides);
 
 export const buttonStyle = (theme: Theme) => ({
     backgroundColor: theme.palette.primary.main,
-    border: "2px solid #eb4034",
+    border: `2px solid ${theme.palette.primary.main}`,
     borderRadius: "4px",
     color: theme.palette.primary.contrastText,
     transition: "all 0.4s",
