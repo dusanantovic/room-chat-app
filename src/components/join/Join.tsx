@@ -23,17 +23,16 @@ const styles = (theme: Theme) => ({
             height: "350px"
         }
     },
+    item: {
+        padding: "20px"
+    },
     header: {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         ...theme.typography.subtitle1
     },
     actionRoot: {
-        marginTop: "24px",
-        justifyContent: "center",
-        [theme.breakpoints.down("md")]: {
-            marginTop: "32px"
-        }
+        justifyContent: "center"
     },
     button: buttonStyle(theme)
 });
@@ -102,8 +101,8 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                     <Card className={classes.cardRoot}>
                         <CardHeader className={classes.header} title="Join" />
                         <CardContent>
-                            <Grid container spacing={5}>
-                                <Grid item xs={12} md={6}>
+                            <Grid container>
+                                <Grid item xs={12} md={6} className={classes.item}>
                                     <TextField
                                         value={username}
                                         onChange={(e) => this.onChange(e)}
@@ -115,7 +114,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                                         required
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={6} className={classes.item}>
                                     <TextField
                                         value={room}
                                         onChange={(e) => this.onChange(e)}

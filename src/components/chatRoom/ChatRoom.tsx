@@ -45,10 +45,11 @@ const styles = (theme: Theme) => ({
         marginTop: "32px",
         padding: "0px 24px 24px 24px",
         "& form": {
-            height: "50px",
+            position: "relative",
             display: "flex",
-            alignItems: "center",
-            width: "100%"
+            alignItems: "flex-end",
+            width: "100%",
+            height: "80px"
         }
     },
     messageInput: {
@@ -63,7 +64,7 @@ const styles = (theme: Theme) => ({
     },
     typingWrapper: {
         position: "absolute",
-        bottom: "80px",
+        top: "8px",
         ...theme.typography.subtitle2,
         fontSize: "14px",
         color: "#9b9b9b"
@@ -174,19 +175,19 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                             ))}
                         </div>
                         <div className={classes.messageInputWrapper}>
-                            <ChatManager.ChatStateContext.Consumer>
-                                {state => {
-                                    if(state.typing.length === 0) {
-                                        return <React.Fragment />;
-                                    }
-                                    return (
-                                        <div className={classes.typingWrapper}>
-                                            {state.typing.map(t => t.username).join(", ")} typing...
-                                        </div>
-                                    );
-                                }}
-                            </ChatManager.ChatStateContext.Consumer>
                             <form id="messageForm" onSubmit={(e) => this.sendMessage(e)}>
+                                <ChatManager.ChatStateContext.Consumer>
+                                    {state => {
+                                        if(state.typing.length === 0) {
+                                            return <React.Fragment />;
+                                        }
+                                        return (
+                                            <div className={classes.typingWrapper}>
+                                                {state.typing.map(t => t.username).join(", ")} typing...
+                                            </div>
+                                        );
+                                    }}
+                                </ChatManager.ChatStateContext.Consumer>
                                 <TextField
                                     value={message}
                                     onChange={(e) => this.messageOnChange(e)}
