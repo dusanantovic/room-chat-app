@@ -42,7 +42,7 @@ const styles = (theme: Theme) => ({
     messageInputWrapper: {
         display: "flex",
         flexShrink: 0,
-        marginTop: "16px",
+        marginTop: "32px",
         padding: "0px 24px 24px 24px",
         "& form": {
             height: "50px",
@@ -60,6 +60,13 @@ const styles = (theme: Theme) => ({
         ...buttonStyle(theme),
         marginLeft: "16px",
         height: "50px"
+    },
+    typingWrapper: {
+        position: "absolute",
+        bottom: "80px",
+        ...theme.typography.subtitle2,
+        fontSize: "14px",
+        color: "#9b9b9b"
     }
 });
 
@@ -71,16 +78,19 @@ interface ComponentProps {
 
 interface ComponentState {
     message: string;
-    setTyping: boolean;
+    startTyping: boolean;
 }
 
 class Component extends React.Component<ComponentProps, ComponentState> {
 
+    debounceTime: NodeJS.Timeout | null;
+
     constructor(props: ComponentProps){
         super(props);
+        this.debounceTime = null;
         this.state = {
             message: "",
-            setTyping: false
+            startTyping: false
         };
     }
 
@@ -108,7 +118,24 @@ class Component extends React.Component<ComponentProps, ComponentState> {
     }
 
     messageOnChange(e: any) {
-        this.setState({ message: e.target.value });
+        const { socket } = this.props;
+        this.setState({ message: e.target.value, startTyping: true }, () => {
+            if (typeof this.debounceTime === "number") {
+                clearTimeout(this.debounceTime);
+            } else {
+                socket.emit("startTyping", () => {
+                    console.log("Start Typing!");
+                });
+            }
+            this.debounceTime = setTimeout(() => {
+                this.debounceTime = null;
+                this.setState({ startTyping: false }, () => {
+                    socket.emit("stopTyping", () => {
+                        console.log("Stop Typing!");
+                    });
+                });
+            }, 1000);
+        });
     }
 
     render() {
@@ -147,6 +174,18 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                             ))}
                         </div>
                         <div className={classes.messageInputWrapper}>
+                            <ChatManager.ChatStateContext.Consumer>
+                                {state => {
+                                    if(state.typing.length === 0) {
+                                        return <React.Fragment />;
+                                    }
+                                    return (
+                                        <div className={classes.typingWrapper}>
+                                            {state.typing.map(t => t.username).join(", ")} typing...
+                                        </div>
+                                    );
+                                }}
+                            </ChatManager.ChatStateContext.Consumer>
                             <form id="messageForm" onSubmit={(e) => this.sendMessage(e)}>
                                 <TextField
                                     value={message}

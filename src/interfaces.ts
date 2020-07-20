@@ -18,3 +18,8 @@ export interface MessageDataLocation {
     username: string;
     url: string;
 }
+
+export interface Typing {
+    username: string;
+    typing: boolean;
+}

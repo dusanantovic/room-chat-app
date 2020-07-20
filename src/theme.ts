@@ -44,6 +44,7 @@ export const buttonStyle = (theme: Theme) => ({
     color: theme.palette.primary.contrastText,
     transition: "all 0.4s",
     textTransform: "none",
+    "& span": theme.typography.body1,
     "&:hover": {
         transition: "all 0.4s",
         backgroundColor: "#ffffff",

@@ -2,7 +2,7 @@ import React from "react";
 import io from "socket.io-client";
 import { createHashHistory } from "history";
 import { Routes } from "../Routes";
-import { MessageData, MessageDataLocation, User, RoomData } from "../../interfaces";
+import { MessageData, MessageDataLocation, User, RoomData, Typing } from "../../interfaces";
 import { ChatManager } from "../../chat";
 import { config } from "../../config";
 import { MuiThemeProvider } from "@material-ui/core";
@@ -16,6 +16,7 @@ interface ComponentState {
    username: string;
    users: User[];
    messageData: MessageData[];
+   typing: Typing[];
 }
 
 class Component extends React.Component<{}, ComponentState> {
@@ -27,7 +28,8 @@ class Component extends React.Component<{}, ComponentState> {
          room: localStorage.getItem("room") || "",
          username: localStorage.getItem("username") || "",
          users: [],
-         messageData: []
+         messageData: [],
+         typing: []
       };
    }
 
@@ -66,6 +68,18 @@ class Component extends React.Component<{}, ComponentState> {
          });
          socket.on("roomData", ({ room, users }: RoomData) => {
             this.setRoomData(room, users);
+         });
+         socket.on("typing", ({ username, typing }: Typing) => {
+            if (typing) {
+               this.setState({ typing: [...this.state.typing, { username, typing }] });
+            } else {
+               const typingData = this.state.typing;
+               const stopTypingIndex = typingData.findIndex(t => t.username === username);
+               if(stopTypingIndex > -1) {
+                  typingData.splice(stopTypingIndex, 1);
+                  this.setState({ typing: typingData });
+               }
+            }
          });
       }
    }

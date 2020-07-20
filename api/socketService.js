@@ -39,6 +39,18 @@ const socketService = (socket, io) => {
         }
     });
 
+    socket.on("startTyping", (callback) => {
+        const user = getUser(socket.id);
+        socket.broadcast.to(user.room).emit("typing", { username: user.username, typing: true });
+        callback();
+    });
+
+    socket.on("stopTyping", (callback) => {
+        const user = getUser(socket.id);
+        socket.broadcast.to(user.room).emit("typing", { username: user.username, typing: false });
+        callback();
+    });
+
     const disconnectUser = (username = "", room = "") => {
         let user = removeUser(socket.id);
         if(username && room) {

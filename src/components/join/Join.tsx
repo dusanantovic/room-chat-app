@@ -25,7 +25,8 @@ const styles = (theme: Theme) => ({
     },
     header: {
         backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText
+        color: theme.palette.primary.contrastText,
+        ...theme.typography.subtitle1
     },
     actionRoot: {
         marginTop: "24px",

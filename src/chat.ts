@@ -1,6 +1,6 @@
 import React from "react";
 import moment from "moment";
-import { User, MessageData, MessageDataLocation } from "./interfaces";
+import { User, MessageData, MessageDataLocation, Typing } from "./interfaces";
 
 const ChatStateContext = React.createContext({
    socket: null as SocketIOClient.Socket | null,
@@ -8,6 +8,7 @@ const ChatStateContext = React.createContext({
    username: "",
    users: [] as User[],
    messageData: [] as MessageData[],
+   typing: [] as Typing[],
    setLoginData: (e: any) => {},
    setRoomData: (room: string, users: User[]) => {},
    setMessageData: (data: MessageData) => {},
