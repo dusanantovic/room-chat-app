@@ -1,9 +1,9 @@
 import * as React from "react";
 import { ChatManager } from "../../chat";
 import { IconButton, Drawer, withStyles, Theme, Button } from "@material-ui/core";
-import { Menu } from "@material-ui/icons";
-import ColorPicker from "material-ui-color-picker";
+import { Menu, Close } from "@material-ui/icons";
 import { buttonStyle } from "../../theme";
+import { ColorPicker } from "./ColorPicker";
 
 const buttonsStyle = (theme: Theme) => ({
     ...buttonStyle(theme),
@@ -19,19 +19,22 @@ const styles = (theme: Theme) => ({
         color: theme.palette.primary.contrastText
     },
     sidebarRoot: {
-        width: "20%",
+        width: "25%",
         [theme.breakpoints.down("sm")]: {
-            width: "50%"
+            width: "100%"
         }
     },
     roomTitle: {
-        paddingLeft: "24px",
+        padding: "0px 24px",
         height: "100px",
         display: "flex",
         alignItems: "center",
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
-        ...theme.typography.subtitle1
+        ...theme.typography.subtitle1,
+        "& button": {
+            color: theme.palette.primary.contrastText
+        }
     },
     usersTitle: {
         paddingLeft: "24px",
@@ -114,15 +117,16 @@ const shareLocation = (socket: SocketIOClient.Socket) => {
 }
 
 const Component = ({ logout, classes, ...props }: ComponentProps) => {
-    const [open, setState] = React.useState(false);
+    const [open, setOpenDrawerState] = React.useState(false);
+    const [openColorPicker, setOpenColorPicker] = React.useState(false);
     return (
         <div className={classes.root}>
-            <IconButton className={classes.buttonRoot} onClick={() => setState(true)}>
+            <IconButton className={classes.buttonRoot} onClick={() => setOpenDrawerState(true)}>
                 <Menu />
             </IconButton>
             <Drawer
                 open={open}
-                onClose={() => setState(false)}
+                onClose={() => setOpenDrawerState(false)}
                 classes={{
                     paper: classes.sidebarRoot
                 }}
@@ -131,7 +135,11 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                     {state => (
                         <React.Fragment>
                             <div className={classes.roomTitle}>
-                                {state.room}
+                                <div>{state.room}</div>
+                                <div className={classes.grow} />
+                                <IconButton onClick={() => setOpenDrawerState(false)}>
+                                    <Close />
+                                </IconButton>
                             </div>
                             <div className={classes.usersTitle}>
                                 Users
@@ -150,18 +158,19 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                                 })}
                             </ul>
                             <div className={classes.grow} />
-                            <div className={classes.changeColorWrapper}>
+                            <Button
+                                onClick={() => setOpenColorPicker(true)}
+                                className={classes.shareButton}
+                            >
+                                Color Settings
+                            </Button>
+                            {openColorPicker && (
                                 <ColorPicker
-                                    name="color"
-                                    value=""
-                                    onChange={(color: string) => state.changePrimaryColor(color)}
-                                    className={classes.colorPickerField}
-                                    InputProps={{
-                                        disableUnderline: true
-                                    }}
+                                    defaultColor={state.theme.palette.primary.main}
+                                    onClose={() => setOpenColorPicker(false)}
+                                    onChangeCallback={(color: string) => state.changePrimaryColor(color)}
                                 />
-                                <div className={classes.changeColorText}>Change Website Color</div>
-                            </div>
+                            )}
                             <Button
                                 id="shareLocation"
                                 onClick={() => shareLocation(state.socket!)}
