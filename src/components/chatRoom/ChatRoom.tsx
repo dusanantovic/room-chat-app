@@ -1,11 +1,13 @@
 import * as React from "react";
+import { Prompt } from "react-router-dom";
+import { withStyles, Theme, TextField, Button } from "@material-ui/core";
+import "emoji-mart/css/emoji-mart.css";
+import { Picker as EmojiPicker, Emoji } from "emoji-mart";
 import isUrl from "is-url";
 import { Sidebar } from "./Sidebar";
 import { MessageData } from "../../interfaces";
-import { withStyles, Theme, TextField, Button } from "@material-ui/core";
 import { buttonStyle } from "../../theme";
 import { ChatManager } from "../../chat";
-import { Prompt } from "react-router-dom";
 
 const styles = (theme: Theme) => ({
     root: {
@@ -68,6 +70,19 @@ const styles = (theme: Theme) => ({
         ...theme.typography.subtitle2,
         fontSize: "14px",
         color: "#9b9b9b"
+    },
+    emojiButtonWrapper: {
+        position: "absolute",
+        top: 0,
+        right: "20px",
+        "& button": {
+            cursor: "pointer"
+        }
+    },
+    emojiPickerWrapper: {
+        position: "absolute",
+        right: 0,
+        bottom: "85px"
     }
 });
 
@@ -83,6 +98,8 @@ interface ComponentState {
     message: string;
     startTyping: boolean;
     allowPrompt: boolean;
+    openEmojiPicker: boolean;
+    overEmojiIcon: boolean;
 }
 
 class Component extends React.Component<ComponentProps, ComponentState> {
@@ -95,7 +112,9 @@ class Component extends React.Component<ComponentProps, ComponentState> {
         this.state = {
             message: "",
             startTyping: false,
-            allowPrompt: true
+            allowPrompt: true,
+            openEmojiPicker: false,
+            overEmojiIcon: false
         };
     }
 
@@ -129,7 +148,13 @@ class Component extends React.Component<ComponentProps, ComponentState> {
 
     messageOnChange(e: any) {
         const { socket } = this.props;
-        this.setState({ message: e.target.value, startTyping: true }, () => {
+        let { message } = this.state;
+        message = e.native ? `${message}${e.native}` : e.target.value;
+        this.setState({
+            message,
+            openEmojiPicker: false,
+            startTyping: true
+        }, () => {
             if (typeof this.debounceTime === "number") {
                 clearTimeout(this.debounceTime);
             } else {
@@ -139,6 +164,8 @@ class Component extends React.Component<ComponentProps, ComponentState> {
             }
             this.debounceTime = setTimeout(() => {
                 this.debounceTime = null;
+                const messageInput = document.querySelector("#messageInput") as any;
+                messageInput.focus();
                 this.setState({ startTyping: false }, () => {
                     socket.emit("stopTyping", () => {
                         console.log("Stop Typing!");
@@ -146,6 +173,14 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                 });
             }, 1000);
         });
+    }
+
+    openEmojiPicker(openEmojiPicker: boolean) {
+        this.setState({ openEmojiPicker });
+    }
+
+    overEmojiIcon(overEmojiIcon: boolean) {
+        this.setState({ overEmojiIcon });
     }
 
     callLogout() {
@@ -156,7 +191,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
 
     render() {
         const { messageData, classes } = this.props;
-        const { allowPrompt, message } = this.state;
+        const { allowPrompt, openEmojiPicker, overEmojiIcon, message } = this.state;
         return (
             <div className={classes.root}>
                 <Prompt
@@ -204,6 +239,7 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                                     }}
                                 </ChatManager.ChatStateContext.Consumer>
                                 <TextField
+                                    id="messageInput"
                                     value={message}
                                     onChange={(e) => this.messageOnChange(e)}
                                     name="message"
@@ -215,6 +251,26 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                                         disableUnderline: true
                                     }}
                                 />
+                                <div className={classes.emojiButtonWrapper}>
+                                    <Emoji
+                                        emoji={openEmojiPicker ? ":shushing_face:" : overEmojiIcon ? ":grinning:" : ":thinking_face:"}
+                                        set={"google"}
+                                        skin={1}
+                                        size={24}
+                                        onClick={() => this.openEmojiPicker(!openEmojiPicker)}
+                                        onOver={() => this.overEmojiIcon(true)}
+                                        onLeave={() => this.overEmojiIcon(false)}
+                                    />
+                                </div>
+                                 {openEmojiPicker && (
+                                    <div className={classes.emojiPickerWrapper}>
+                                        <EmojiPicker
+                                            set="google"
+                                            title="Room App"
+                                            onSelect={(e: any) => this.messageOnChange(e)}
+                                        />
+                                    </div>
+                                 )}
                                 <Button type="submit" className={classes.sendButton}>
                                     Send
                                 </Button>
