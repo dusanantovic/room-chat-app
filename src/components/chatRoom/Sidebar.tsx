@@ -12,8 +12,7 @@ const buttonsStyle = (theme: Theme) => ({
 
 const styles = (theme: Theme) => ({
     root: {
-        backgroundColor: theme.palette.primary.main,
-        height: "100vh"
+        backgroundColor: theme.palette.primary.main
     },
     buttonRoot: {
         color: theme.palette.primary.contrastText

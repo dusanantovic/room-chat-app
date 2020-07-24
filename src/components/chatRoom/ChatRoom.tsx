@@ -11,14 +11,14 @@ import { ChatManager } from "../../chat";
 
 const styles = (theme: Theme) => ({
     root: {
-        display: "flex"
+        display: "flex",
+        height: "100%"
     },
     fullWidth: {
         display: "flex",
         width: "100%"
     },
     chatWrapper: {
-        maxHeight: "100vh",
         flexGrow: 1,
         display: "flex",
         flexDirection: "column"
