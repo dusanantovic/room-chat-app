@@ -15,7 +15,6 @@ const ChatStateContext = React.createContext({
    setRoomData: (room: string, users: User[]) => {},
    setMessageData: (data: MessageData) => {},
    setLocationData: (data: MessageDataLocation) => {},
-   changePrimaryColor: (color: string) => {},
    join: () => {},
    logout: (redirect: boolean) => {}
 });

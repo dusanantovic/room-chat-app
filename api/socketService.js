@@ -51,6 +51,13 @@ const socketService = (socket, io) => {
         callback();
     });
 
+    socket.on("changeColor", (color, callback) => {
+        const user = getUser(socket.id);
+        io.to(user.room).emit("color", color);
+        io.to(user.room).emit("message", generateMessage(user.username, `${user.username} has changed the color to ${color}`));
+        callback();
+    });
+
     const disconnectUser = (username = "", room = "") => {
         let user = removeUser(socket.id);
         if(username && room) {

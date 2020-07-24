@@ -89,6 +89,13 @@ class Component extends React.Component<{}, ComponentState> {
                }
             }
          });
+         socket.on("color", (color: string) => {
+            let { theme } = this.state;
+            theme.palette.primary.main = color;
+            theme = createMuiTheme(theme);
+            this.setState({ theme });
+            localStorage.setItem("primaryColor", color);
+         });
       }
    }
 
@@ -142,21 +149,6 @@ class Component extends React.Component<{}, ComponentState> {
       this.setState({ messageData: [] });
    }
 
-   changePrimaryColor(color: string) {
-      let { theme } = this.state;
-      if(color) {
-         if(typeof this.debounceTimer === "number") {
-            clearTimeout(this.debounceTimer);
-         }
-         this.debounceTimer = setTimeout(() => {
-            theme.palette.primary.main = color;
-            theme = createMuiTheme(theme);
-            this.setState({ theme });
-            localStorage.setItem("primaryColor", color);
-         }, 300);
-      }
-   }
-
    render() {
       const { socket, theme } = this.state;
       if(!socket) {
@@ -170,7 +162,6 @@ class Component extends React.Component<{}, ComponentState> {
                setRoomData: (room, users) => this.setRoomData(room, users),
                setMessageData: (data) => this.setMessageData(data),
                setLocationData: (data) => this.setLocationData(data),
-               changePrimaryColor: (color) => this.changePrimaryColor(color),
                join: () => this.join(),
                logout: (redirect) => this.logout(redirect)
             }}

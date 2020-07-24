@@ -10,6 +10,8 @@ const buttonsStyle = (theme: Theme) => ({
     maxWidth: "100%"
 });
 
+let debounceTimer: NodeJS.Timeout;
+
 const styles = (theme: Theme) => ({
     root: {
         backgroundColor: theme.palette.primary.main
@@ -98,26 +100,40 @@ interface ComponentProps {
     classes?: any;
 }
 
-const shareLocation = (socket: SocketIOClient.Socket) => {
-    if(!navigator.geolocation) {
-        return alert("Geolocation is not supported by your browser");
-    }
-    const shareLocationButton = document.querySelector("#shareLocation")!;
-    shareLocationButton.setAttribute("disabled", "disabled");
-    navigator.geolocation.getCurrentPosition((postition) => {
-        socket.emit("sendLocation", {
-            lat: postition.coords.latitude,
-            lng: postition.coords.longitude
-        }, () => {
-            shareLocationButton.removeAttribute("disabled");
-            console.log("Location Shared!");
-        });
-    });
-}
-
 const Component = ({ logout, classes, ...props }: ComponentProps) => {
     const [open, setOpenDrawerState] = React.useState(false);
     const [openColorPicker, setOpenColorPicker] = React.useState(false);
+
+    const changeColor = (socket: SocketIOClient.Socket, color: string) => {
+        if(color) {
+            if(typeof debounceTimer === "number") {
+                clearTimeout(debounceTimer);
+            }
+            debounceTimer = setTimeout(() => {
+                socket.emit("changeColor", color, () => {
+                    console.log("Color changed!");
+                });
+            }, 300);
+        }
+    }
+
+    const shareLocation = (socket: SocketIOClient.Socket) => {
+        if(!navigator.geolocation) {
+            return alert("Geolocation is not supported by your browser");
+        }
+        const shareLocationButton = document.querySelector("#shareLocation")!;
+        shareLocationButton.setAttribute("disabled", "disabled");
+        navigator.geolocation.getCurrentPosition((postition) => {
+            socket.emit("sendLocation", {
+                lat: postition.coords.latitude,
+                lng: postition.coords.longitude
+            }, () => {
+                shareLocationButton.removeAttribute("disabled");
+                console.log("Location Shared!");
+            });
+        });
+    }
+
     return (
         <div className={classes.root}>
             <IconButton className={classes.buttonRoot} onClick={() => setOpenDrawerState(true)}>
@@ -147,10 +163,10 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                                 {state.users.map((user, i) => {
                                     let typing = false;
                                     if(state.typing.length > 0) {
-                                        typing = !!state.typing.find(t => t.username === user.username && t.typing);
+                                        typing = !!state.typing.find(t => t.username.toLocaleLowerCase() === user.username.toLocaleLowerCase() && t.typing);
                                     }
                                     return (
-                                        <li key={i} className={user.username === state.username ? classes.you : ""}>
+                                        <li key={i} className={user.username.toLocaleLowerCase() === state.username.toLocaleLowerCase() ? classes.you : ""}>
                                             {user.username} {typing ? <span className={[classes.typing, "pulse"].join(" ")}>typing...</span> : ""}
                                         </li>
                                     );
@@ -167,7 +183,7 @@ const Component = ({ logout, classes, ...props }: ComponentProps) => {
                                 <ColorPicker
                                     defaultColor={state.theme.palette.primary.main}
                                     onClose={() => setOpenColorPicker(false)}
-                                    onChangeCallback={(color: string) => state.changePrimaryColor(color)}
+                                    onChangeCallback={(color: string) => changeColor(state.socket!, color)}
                                 />
                             )}
                             <Button

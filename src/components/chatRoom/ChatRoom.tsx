@@ -41,7 +41,11 @@ const styles = (theme: Theme) => ({
         fontSize: "14px",
         color: "#777777"
     },
-    messageText: theme.typography.body1,
+    messageText: {
+        ...theme.typography.body1,
+        display: "flex",
+        alignItems: "center"
+    },
     messageInputWrapper: {
         display: "flex",
         flexShrink: 0,
@@ -83,6 +87,12 @@ const styles = (theme: Theme) => ({
         position: "absolute",
         right: 0,
         bottom: "85px"
+    },
+    colorDiv: {
+        width: "20px",
+        height: "20px",
+        borderRadius: "4px",
+        marginLeft: "8px"
     }
 });
 
@@ -202,27 +212,40 @@ class Component extends React.Component<ComponentProps, ComponentState> {
                 <div className={classes.fullWidth}>
                     <div className={classes.chatWrapper}>
                         <div id="messagesContainer" className={classes.chatMessageWrapper}>
-                            {messageData.map((data, i) => (
-                                <div className={classes.message} key={i}>
-                                    <p>
-                                        <span className={classes.messageTitle}>{data.username}</span>
-                                        <span className={classes.messageMeta}>{data.createdAt}</span>
-                                    </p>
-                                    {isUrl(data.text) ?
-                                        (
-                                            <a className={classes.messageText} href={data.text} target="_blank" rel="noopener noreferrer">
-                                                My current location
-                                            </a>
-                                        )
-                                    :
-                                        (
-                                            <p className={classes.messageText}>
-                                                {data.text}
-                                            </p>
-                                        )
+                            {messageData.map((data, i) => {
+                                let messageText = data.text;
+                                const changeColorMessage = messageText.includes("has changed the color to ");
+                                let color = "";
+                                if (changeColorMessage) {
+                                    const colorArr = messageText.split("has changed the color to ");
+                                    color = colorArr[1] || "";
+                                    if (color) {
+                                        messageText = messageText.replace(color, "");
                                     }
-                                </div>
-                            ))}
+                                }
+                                return (
+                                    <div className={classes.message} key={i}>
+                                        <p>
+                                            <span className={classes.messageTitle}>{data.username}</span>
+                                            <span className={classes.messageMeta}>{data.createdAt}</span>
+                                        </p>
+                                        {isUrl(messageText) ?
+                                            (
+                                                <a className={classes.messageText} href={messageText} target="_blank" rel="noopener noreferrer">
+                                                    My current location
+                                                </a>
+                                            )
+                                        :
+                                            (
+                                                <p className={classes.messageText}>
+                                                    {messageText} 
+                                                    {color ? <div className={classes.colorDiv} style={{ backgroundColor: color } as any} /> : <React.Fragment />}
+                                                </p>
+                                            )
+                                        }
+                                    </div>
+                                );
+                            })}
                         </div>
                         <div className={classes.messageInputWrapper}>
                             <form id="messageForm" onSubmit={(e) => this.sendMessage(e)}>
