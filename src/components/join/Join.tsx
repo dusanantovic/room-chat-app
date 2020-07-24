@@ -9,7 +9,7 @@ const styles = (theme: Theme) => ({
         display: "flex",
         alignItems: "center",
         width: "100%",
-        height: "100vh"
+        height: "100%"
     },
     center: {
         display: "flex",
